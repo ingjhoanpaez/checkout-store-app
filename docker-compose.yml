@@ -1,0 +1,27 @@
+services:
+  backend:
+    image: node:20-alpine
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run start:dev"
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env.example
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: checkout_store
+      POSTGRES_USER: checkout
+      POSTGRES_PASSWORD: checkout
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
