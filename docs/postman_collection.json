@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "checkout-store-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{apiUrl}}/",
+          "host": ["{{apiUrl}}"],
+          "path": [""]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}
