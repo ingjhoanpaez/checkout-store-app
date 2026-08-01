@@ -1,7 +1,16 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
-import { registerAs } from '@nestjs/config';
+import { registerAs, ConfigType } from '@nestjs/config';
 
-export default registerAs('database', (): SequelizeModuleOptions => ({
+export interface PostgresConfigOptions extends Omit<
+  SequelizeModuleOptions,
+  'dialect'
+> {
+  dialect: 'postgres';
+}
+
+export type DatabaseConfig = ConfigType<() => PostgresConfigOptions>;
+
+export default registerAs('database', (): DatabaseConfig => ({
   dialect: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
