@@ -1,13 +1,8 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:17
-
     container_name: store-postgres
-
     restart: unless-stopped
-
     environment:
       POSTGRES_DB: checkout_store
       POSTGRES_USER: postgres
@@ -19,22 +14,59 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d checkout_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrations:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: store-migrations
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: checkout_store
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+
+    restart: "no"
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
 
     container_name: store-backend
-
     restart: unless-stopped
 
+    env_file:
+      - ./backend/.env
+
     depends_on:
-      - postgres
+      migrations:
+        condition: service_completed_successfully
 
     ports:
       - "3000:3000"
 
     environment:
+      NODE_ENV: production
+      PORT: 3000
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: checkout_store
@@ -47,11 +79,10 @@ services:
       dockerfile: Dockerfile
 
     container_name: store-frontend
-
     restart: unless-stopped
-
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
     ports:
       - "5173:5173"

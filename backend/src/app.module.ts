@@ -1,14 +1,16 @@
-import Joi from 'joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
-import appConfig from './config/app.config';
-import databaseConfig from './config/database.config';
-import { envValidationSchema } from './config/validation/env.validation';
+import appConfig from '@config/app.config';
+import databaseConfig from '@config/database.config';
+import { validateEnvironment } from '@config/environment';
 
-import { DatabaseModule } from './infrastructure/database/database.module';
+import { DatabaseModule } from '@infrastructure/database/database.module';
+import { CustomersModule } from '@modules/customers/customers.module';
+import { DeliveriesModule } from '@modules/deliveries/deliveries.module';
+import { PaymentsModule } from '@modules/payments/payments.module';
+import { ProductsModule } from '@modules/products/products.module';
+import { TransactionsModule } from '@modules/transactions/transactions.module';
 
 @Module({
   imports: [
@@ -16,11 +18,14 @@ import { DatabaseModule } from './infrastructure/database/database.module';
       isGlobal: true,
       load: [appConfig, databaseConfig],
       envFilePath: '.env',
-      validationSchema: envValidationSchema,
+      validate: validateEnvironment,
     }),
     DatabaseModule,
+    CustomersModule,
+    DeliveriesModule,
+    PaymentsModule,
+    ProductsModule,
+    TransactionsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

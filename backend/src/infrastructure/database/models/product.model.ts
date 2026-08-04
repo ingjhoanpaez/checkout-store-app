@@ -38,4 +38,11 @@ export class ProductModel extends Model {
     type: DataType.INTEGER,
   })
   declare stock: number;
+
+  @Column({
+    allowNull: false,
+    defaultValue: 0,
+    type: DataType.INTEGER,
+  })
+  declare reservedStock: number;
 }

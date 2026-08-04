@@ -1,29 +1,19 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigService } from '@nestjs/config';
-import type { DatabaseConfig } from 'src/config/database.config';
+import { ConfigModule } from '@nestjs/config';
+import { SequelizeModuleOptions } from '@nestjs/sequelize';
+import databaseConfig from '@config/database.config';
+import { SequelizeUnitOfWork } from './sequelize-unit-of-work';
 
 @Module({
   imports: [
+    ConfigModule.forFeature(databaseConfig),
     SequelizeModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<DatabaseConfig>) => {
-        const db = configService.get<DatabaseConfig>('database')!;
-
-        return {
-          dialect: 'postgres',
-          host: db.host,
-          port: db.port,
-          username: db.username,
-          password: db.password,
-          database: db.database,
-          autoLoadModels: db.autoLoadModels,
-          synchronize: db.synchronize,
-          logging: db.logging,
-          models: [__dirname + '/models/*.model{.ts,.js}'],
-        };
-      },
+      inject: [databaseConfig.KEY],
+      useFactory: (config: SequelizeModuleOptions) => config,
     }),
   ],
+  providers: [SequelizeUnitOfWork],
+  exports: [SequelizeUnitOfWork],
 })
 export class DatabaseModule {}

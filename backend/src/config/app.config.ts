@@ -1,11 +1,13 @@
-export interface AppConfig {
-  port: number;
-  nodeEnv: string;
-}
+import { readEnvironment } from './environment';
 
-export default (): { app: AppConfig } => ({
-  app: {
-    port: Number(process.env.PORT ?? 3000),
-    nodeEnv: process.env.NODE_ENV ?? 'development',
-  },
-});
+export default () => {
+  const environment = readEnvironment();
+
+  return {
+    app: {
+      port: environment.port,
+      nodeEnv: environment.nodeEnv,
+      frontendUrl: environment.frontendUrl,
+    },
+  };
+};
