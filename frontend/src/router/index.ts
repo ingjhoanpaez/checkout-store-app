@@ -1,23 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      // 1. Product page
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'products',
+      component: () => import('@/views/ProductListView.vue'),
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      // 2. Credit Card / Delivery info
+      path: '/checkout/:productId/info',
+      name: 'checkout-info',
+      component: () => import('@/views/CheckoutInfoView.vue'),
+      props: true,
     },
+    {
+      // 3. Summary
+      path: '/checkout/summary',
+      name: 'checkout-summary',
+      component: () => import('@/views/CheckoutSummaryView.vue'),
+    },
+    {
+      // 4. Final status
+      path: '/checkout/:reference/result',
+      name: 'checkout-result',
+      component: () => import('@/views/CheckoutResultView.vue'),
+      props: true,
+    },
+    // 5. Vuelve a "products" (ruta '/')
   ],
-})
+});
 
-export default router
+export default router;
